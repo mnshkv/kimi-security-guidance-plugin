@@ -1,0 +1,38 @@
+{
+  "$schema": "https://kimi.com/schemas/kimi.plugin.schema.json",
+  "name": "security-guidance",
+  "version": "1.0.0",
+  "description": "Security review for agent-generated code: regex pattern warnings on every edit, a vulnerability rubric applied to the session diff before finishing, and a deep agentic commit review across OWASP vulnerability classes (injection, XSS, SSRF, secrets, IDOR, auth bypass, deserialization, path traversal).",
+  "keywords": [
+    "security",
+    "security-review",
+    "vulnerabilities",
+    "owasp",
+    "code-review",
+    "sql-injection",
+    "xss",
+    "ssrf",
+    "secrets",
+    "idor",
+    "auth-bypass",
+    "deserialization",
+    "path-traversal",
+    "command-injection",
+    "static-analysis"
+  ],
+  "author": "David Dworken / Anthropic (ported to Kimi Code by mnshkv)",
+  "license": "Apache-2.0 (upstream patterns, rubric, and review prompts); port © mnshkv",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Security Guidance",
+    "shortDescription": "Pattern warnings on edits, diff review per turn, agentic OWASP commit review",
+    "longDescription": "Guides your coding agent toward writing more secure code, in three layers.\n\n1. Pattern warnings — on every file edit or write, the agent checks the changed content against ~25 known-dangerous patterns (yaml.load without SafeLoader, pickle/torch.load on untrusted data, raw innerHTML, dangerouslySetInnerHTML, os.system, subprocess shell=True, disabled TLS verification, hardcoded crypto mistakes, GitHub Actions workflow injection, and more) using the regex database in references/ and applies the attached remediation guidance before continuing.\n\n2. Diff review — before finishing a turn, the agent reviews the session's git diff against a detailed vulnerability rubric covering command injection, path traversal, SQL injection, IDOR/authorization, SSRF, XSS, secrets in logs, unsafe deserialization, TLS misconfiguration, OAuth flow weaknesses, argument injection, and more — flagging only newly introduced (+ line) issues with severity and a concrete fix.\n\n3. Agentic commit review — before committing, the agent performs a deep review: reads every changed file in full, greps for callers and data flows across the repository, checks high-miss patterns (gate/action field mismatch, allowlist semantic escape, fail-open state drift), then adversarially self-refutes each candidate finding before reporting what survives.\n\nOrg-specific policies: drop a security-guidance.md in your project or user config directory to add checks (see skills/security-guidance/references/custom-rules.md).\n\nPorted from the Claude Code plugin 'security-guidance' (David Dworken / Anthropic, Apache-2.0). The original runs as PreToolUse/Stop hooks plus an inner Claude Agent SDK reviewer; Kimi Code has no hook API, so this port turns the same checks into instructions the agent applies itself.",
+    "developerName": "David Dworken / Anthropic / mnshkv",
+    "hostKind": "local"
+  },
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ]
+}
